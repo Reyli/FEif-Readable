@@ -8,6 +8,19 @@ How to run
 ----------------------
 Run:  python FEifReadableScript.py
 
+Sample Input: 
+MID_A013_OP1_PCM1: $t1$Wmアクア|3$w0|$Wsアクア|$Wa$SvpVOICE_AQUA_WIN_06|着いたわ…\nここが、シュヴァリエ公国よ。$k\n$Wmサクラ|7$w0|$Wsサクラ|$Wa$E怒,|$SvpVOICE_SAKURA_EVT_01|リョウマ兄様…\n早くお会いしたいです。$k\n
+
+Sample Output:
+MID_A013_OP1_PCM1:
+アクア:
+着いたわ…
+ここが、シュヴァリエ公国よ。▼
+
+サクラ:
+リョウマ兄様…
+早くお会いしたいです。▼
+
 You will enter the input.txt file to process.
 The script should be in the same directory as the input file.
 The folders included are just for organization.
