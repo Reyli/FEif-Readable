@@ -2,31 +2,38 @@
 import sys
 import re
 
-inputfile = input("Enter input file name: ")
-while inputfile == "":
-	inputfile = "input.txt" 
+def promptuserforinput(prompt, default):
+	userinput = input(prompt)
+	if not userinput:
+		userinput = default
+	return userinput
+	
+def replacelistofstuff(list, string, replace):
+	for stuff in list:
+		string = string.replace(stuff, replace)
+	return string
 
-textfile1 = open(inputfile, encoding="utf8")
-outputfile = input("Enter output file name. Otherwise it will appear as \"output.txt\": ")
-if outputfile == "":
-	outputfile = "output.txt"
+inputfile = promptuserforinput("Enter input file name: ", "input.txt")
+outputfile =  promptuserforinput("Enter output file name: ", "output.txt")
+outputtextfile = open(outputfile, 'w', encoding="utf8")
 
-Theoutputtextfile = open(outputfile, 'w', encoding="utf8")
-removeitems = [r'\$Wa\$', r'\$E.*,', r'\d\$w0', r'VOICE', r'\$W[sm]',
+removeitems = [r'\$Wa\$', r'\$E.*,', r'\d\$W\w', r'VOICE', r'\$W[sm]',
 r'\$Wd\$w0', r'\$b..', r'\$w0', r'PID', r'STRM', r'\$Sbs.*', r'EVT',
 r'\$Wc']
+beforenamecommands = [r'\d\$Ws', r'\$W[sm]']
 #Notes: $k$p = Same person, scroll to new "two line dialogue set".
 # $k\n = New person talking. Label right after it.
 # $k = dialogue end.
 # $k = Scroll button?
-MUname = input("Enter MU name, otherwise it will appear as the Japanese \"Kamui\": ")
-if MUname == "":
-	MUname = "カムイ"
+MUname = promptuserforinput("Enter MU name, otherwise it will appear as the Japanese \"Kamui\": ", "カムイ")
 
-linenumber = 1
 
-for lines in textfile1:
-	if linenumber > 6:
+	
+
+with open(inputfile, encoding="utf8") as inputtextfile:
+	for x in range( 6):
+		outputtextfile.write(next(inputtextfile))
+	for lines in inputtextfile:	
 		lines = lines.replace("$Nu", MUname)
 		lines = lines.replace("username", MUname)
 		lines = lines.replace("$k\\n", "$k\\n|")
@@ -39,7 +46,7 @@ for lines in textfile1:
 		skipflag = False
 		printnameflag = False
 		commandfound = False
-		currentname = "Test"
+		currentname = ""
 		
 		for items in splitline:
 			nameprinted = False
@@ -48,22 +55,24 @@ for lines in textfile1:
 				printnameflag = True
 			else:
 				commandfound = True
-			#Theoutputtextfile.write("Printnameflag: " + str(printnameflag)+ '\n')
-			#Theoutputtextfile.write("Commandfound: " + str(commandfound)+ '\n\n')	
+			#outputtextfile.write("Printnameflag: " + str(printnameflag)+ '\n')
+			#outputtextfile.write("Commandfound: " + str(commandfound)+ '\n\n')	
 			commandsearch = None
 			namesearch = re.search(r'\$W[sm]',items)
 			if namesearch:
-				currentname = items.replace("$Ws","")
-				currentname = currentname.replace("$Wm","")
+				currentname = items
+				for things in beforenamecommands:
+					pattern = things
+					currentname = re.sub(pattern, "", currentname)
 			namesearch = None
-			if firstitem is True:
-				Theoutputtextfile.write(items + ":\n") #prints the text ID
+			if firstitem == True:
+				outputtextfile.write(items + ":\n") #prints the text ID
 				firstitem = False
 				commandfound = False
 			else:
 				items = items.replace("$p","")
 				items = items.replace("$k","▼\n")
-				if seconditem is True:
+				if seconditem == True:
 					items = items.replace(" ", "")
 					seconditem = False
 				for stuff in removeitems:
@@ -75,24 +84,21 @@ for lines in textfile1:
 						skipflag = True
 				if (skipflag != True):
 					if (printnameflag == True) and (commandfound == True):
-						Theoutputtextfile.write(currentname + ":\n")
+						outputtextfile.write(currentname + ":\n")
 						printnameflag = False;
 						commandfound = False;
 					filter = items.replace("$Wa", "")
-					Theoutputtextfile.write(filter + "\n")
+					outputtextfile.write(filter + "\n")
 				previousitem = items
 				skipflag = False
 				match = None	
-		Theoutputtextfile.write('\n')
-	else:
-		Theoutputtextfile.write(lines)
-	linenumber = linenumber + 1
+		outputtextfile.write('\n')
+inputtextfile.close
+outputtextfile.close
 	
 
-print(outputfile + "file successfully generated.\n")
+print(outputfile + " file successfully generated.\n")
 
-textfile1.close
-Theoutputtextfile.close
 
 
 
