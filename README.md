@@ -35,5 +35,4 @@ Files in the "Original Files" folder were taken from dumps from the game.
 Changelog:
 0.2: Fixed the bug that left digits before a character name due to a stray command.
 
-
 0.1: Initial Build
